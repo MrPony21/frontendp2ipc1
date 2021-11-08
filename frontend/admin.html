@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <title>Ublog: admin</title>
+  </head>
+  <body onload="verusuarios()">
+    <div style="width: 80%; float: left;">;
+        <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Gender</th>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+                <th scope="col">Password</th>
+                <th scope="col">Opciones</th>
+              </tr>
+            </thead>
+            <tbody id="usuarios">
+              
+            </tbody>
+          </table>
+
+    </div>
+    <div style="float: right; padding-right: 20px; padding-top: 65px;">
+        <button onclick="cerrar_sesion()" type="button" class="btn btn-outline-danger">Cerrar Sesion</button>
+    </div>
+
+
+    <script>
+
+        function verusuarios(){
+
+            var tabla_usuarios = document.querySelector('#usuarios')
+            var datos = ''
+
+            fetch('https://backend-p2-202003220.herokuapp.com/users', {
+            method: 'GET',
+            headers:{
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',}})
+            .then(res => res.json())
+            .catch(err => {
+                console.error('Error:', err)
+                alert("Ocurrio un error, ver la consola")
+            })
+            .then(response =>{
+                console.log(response);
+                i = 1
+                response.forEach(element => {
+
+                    console.log(element)
+                    
+                    if(i == 1){
+                        datos += `<tr>
+                        <td> ${i}</td>
+                        <td> ${element.name} </td> 
+                        <td> ${element.gender}</td> 
+                        <td> ${element.username}</td> 
+                        <td> ${element.email}</td> 
+                        <td> ${element.password}</td> 
+                        <td></td> 
+                        </tr>` 
+
+                    }else{
+                        datos += `<tr>
+                        <td> ${i}</td>
+                        <td> ${element.name} </td> 
+                        <td> ${element.gender}</td> 
+                        <td> ${element.username}</td> 
+                        <td> ${element.email}</td> 
+                        <td> ${element.password}</td> 
+                        <td><button value=${element.username} onclick="ver_perfil(this)" type="button" class="btn btn-info">Ver</button>  <button value=${element.username} type="button" onclick="editar_usuario(this)" class="btn btn-warning">Editar</button>  <button value=${element.username} onclick="eliminar_usuario(this)" type="button" class="btn btn-danger">Eliminar</button></td> 
+                        </tr>`
+                    }
+            
+                    i++;    
+                });
+
+                tabla_usuarios.innerHTML = datos
+
+
+
+
+            })
+
+
+
+        }
+
+
+        function eliminar_usuario(username){
+
+            var usuario_eliminar = username.value
+            console.log(usuario_eliminar)
+
+            fetch('https://backend-p2-202003220.herokuapp.com/users/'+usuario_eliminar, {
+            method: 'DELETE',
+            headers:{
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',}})
+            .then(res => res.json())
+            .catch(err => {
+                console.error('Error:', err)
+                alert("Ocurrio un error, ver la consola")
+            })
+            .then(response =>{
+                verusuarios()
+            })
+
+            
+        }
+
+        function ver_perfil(username){
+
+            var usuario = username.value
+            console.log(usuario)
+            sessionStorage.setItem("ver",usuario)
+            location.href='verperfil.html'
+
+
+        }
+
+        function editar_usuario(username){
+
+            var usuario_editar = username.value
+            console.log(usuario_editar)
+        |   sessionStorage.setItem("edit",usuario_editar)
+
+
+            location.href='edit.html'
+
+
+
+
+
+        }
+
+        function cerrar_sesion(){
+
+            sessionStorage.setItem("log","")
+            usuario = sessionStorage.getItem("log")
+            console.log(usuario)
+            location.href='log.html'
+
+        }
+
+
+    </script>
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+    -->
+  </body>
+</html>
